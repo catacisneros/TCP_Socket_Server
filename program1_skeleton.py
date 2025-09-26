@@ -15,7 +15,7 @@ def quitFTP(clientSocket):
     clientSocket.sendall(dataOut)
     dataIn = clientSocket.recv(1024)
     data = dataIn.decode("utf-8")
-    sys.exit(0)
+
     print(data)
 
 def sendCommand(socket, command):
