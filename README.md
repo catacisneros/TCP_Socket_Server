@@ -2,7 +2,7 @@ TCP Socket Server
 
 Project Members:
 Isabel Ruiz
-Cata Cisneros
+Cata Cisneros (6517771)
 Pedro Remior (6390824)
 
 Language: Python 3
