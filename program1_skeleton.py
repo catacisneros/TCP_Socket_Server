@@ -20,7 +20,8 @@ def quitFTP(clientSocket):
 
 def sendCommand(socket, command):
     dataOut = command.encode("utf-8")
-    # Complete
+    data = socket.send(dataOut)
+
     return data
 
 
@@ -48,34 +49,59 @@ def modePASV(clientSocket):
 def main():
     # COMPLETE
 
+    #Retrives server name from command line argument, otherwise from user input
+    HOST = ""
+    if(len(sys.argv) <= 1):
+        HOST = input("Enter the server name: ")
+    else:
+        HOST = sys.argv[1:]
+
     username = input("Enter the username: ")
     password = input("Enter the password: ")
 
     clientSocket = socket(AF_INET, SOCK_STREAM) # TCP socket
     # COMPLETE
 
-    HOST = # COMPLETE
-    # COMPLETE
+    #Connects to server through port 21 - control port
+    clientSocket.connect((HOST, 21))
 
+    #Print status code to user, valid connection results in a 220 code
     dataIn = receiveData(clientSocket)
     print(dataIn)
 
     status = 0
     
-    if dataIn.startswith(""):
-        status = 220
+    if dataIn.startswith("220"):
+        status = 220 #Server ready for new user
         print("Sending username")
+
+        #FTP commands are in the structure of [Command Code] [Parameters] [Carriage return, line feed] 
+        #See section 5.3 of https://datatracker.ietf.org/doc/html/rfc959#autoid-5
+
+        command = "USER " + username + "\r\n"
+        sendCommand(clientSocket, command)
+
+        #Receive status code from server
+        dataIn = receiveData(clientSocket)
         # COMPLETE
         
         print(dataIn)
 
         print("Sending password")
-        if dataIn.startswith(""):
+
+        #Only send password if status = 331 -> Username ok, password needed
+        if dataIn.startswith("331"):
             status = 331
+            command = "PASS " + password + "\r\n"
+            sendCommand(clientSocket, command)
+
+            #Ensure server received password
+            dataIn = receiveData(clientSocket)
+
             # COMPLETE
             
             print(dataIn)
-            if dataIn.startswith(""):
+            if dataIn.startswith("230"):
                 status = 230
 
        
@@ -85,6 +111,7 @@ def main():
         pasvStatus, dataSocket = modePASV(clientSocket)
         if pasvStatus == 227:
             # COMPLETE
+            print("test")
     
     print("Disconnecting...")
     
